@@ -38,26 +38,6 @@ static const char* lightVShader = "Shaders/lightShader.vert";
 static const char* fShader = "Shaders/shader.frag";
 static const char* lightFShader = "Shaders/lightShader.frag";
 
-// void CreateModels() {
-//     std::vector<std::string> modelPaths = {
-//         "Models/chairComponent.obj",
-//         "Models/chairPad.obj",
-//         "Models/tableLeg.obj"
-//         "Models/tablePad.obj",
-//         "Models/cutAndPlate.obj",
-//         "Models/floor.obj",
-//         "Models/wall.obj",
-//         "Models/glass.obj",
-//         "Models/cube.obj"
-//     };
-
-//     for (const auto& path : modelPaths) {
-//         Mesh *obj = new Mesh();
-//         obj->CreateMeshFromOBJ(path.c_str());
-//         meshList.push_back(obj);
-//     }
-// }
-
 void CreateOBJ()
 {   
     Mesh *obj1 = new Mesh();
@@ -291,7 +271,6 @@ int main()
     mainWindow.initialise();
 
     CreateOBJ();
-    // CreateModels();
     CreateShaders();
 
     GLuint uniformModel = 0;
@@ -307,7 +286,6 @@ int main()
     glm::vec3 cameraUp = glm::normalize(glm::cross(cameraRight, cameraDirection));
 
     glm::mat4 projection = glm::perspective(45.0f, (GLfloat) mainWindow.getBufferWidth() / (GLfloat)mainWindow.getBufferHeight(), 0.1f, 100.0f);
-    //glm::mat4 projection = glm::ortho(-4.0f, 4.0f, -3.0f, 3.0f, 0.1f, 100.0f);
 
     //texture
     unsigned int texture1 = LoadTextureJPG("Textures/brownwood.jpg");
@@ -319,9 +297,7 @@ int main()
     unsigned int texture7 = LoadTextureJPG("Textures/blackwood.jpg");
     unsigned int texture8 = LoadTextureJPG("Textures/glassTextures.jpg");
 
-    unsigned int textures[] = { texture1, texture2, texture3, texture4, texture5, texture6, texture7, texture8 };   //texture1, texture2, texture3, texture4, texture5, texture6, texture7, texture8
-
-    //for secret room 3 enter - https://forms.gle/U9VE4pkYAPNvUW1H9
+    unsigned int textures[] = { texture1, texture2, texture3, texture4, texture5, texture6, texture7, texture8 };
 
     float deltaTime, lastFrame;
 
@@ -382,7 +358,6 @@ int main()
         cameraRotateMat[2] = glm::vec4(cameraRight.z, cameraUp.z, -cameraDirection.z, 0.0f);
 
         view = cameraRotateMat * cameraPosMat;
-        //view = glm::lookAt(cameraPos, camera  Pos + cameraDirection, cameraUp);
 
         //light
         glUniform3fv(shaderList[0]->GetUniformLocation("lightColour"), 1, (GLfloat *)&lightColour);
