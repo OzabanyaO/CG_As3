@@ -27,7 +27,7 @@ std::vector<Shader*> shaderList;
 
 float yaw = -90.0f, pitch = 0.0f;
 
-glm::vec3 lightColour = glm::vec3(1.0f, 1.3f, 1.0f);
+glm::vec3 lightColour = glm::vec3(2.0f, 2.0f, 2.0f);
 glm::vec3 lightPos = glm::vec3(5.0f, 5.0f, 0.0f);
 
 //Vertex Shader
@@ -38,8 +38,28 @@ static const char* lightVShader = "Shaders/lightShader.vert";
 static const char* fShader = "Shaders/shader.frag";
 static const char* lightFShader = "Shaders/lightShader.frag";
 
+// void CreateModels() {
+//     std::vector<std::string> modelPaths = {
+//         "Models/chairComponent.obj",
+//         "Models/chairPad.obj",
+//         "Models/tableLeg.obj"
+//         "Models/tablePad.obj",
+//         "Models/cutAndPlate.obj",
+//         "Models/floor.obj",
+//         "Models/wall.obj",
+//         "Models/glass.obj",
+//         "Models/cube.obj"
+//     };
+
+//     for (const auto& path : modelPaths) {
+//         Mesh *obj = new Mesh();
+//         obj->CreateMeshFromOBJ(path.c_str());
+//         meshList.push_back(obj);
+//     }
+// }
+
 void CreateOBJ()
-{
+{   
     Mesh *obj1 = new Mesh();
     bool loaded1 = obj1->CreateMeshFromOBJ("Models/chairComponent.obj");
     if (loaded1)
@@ -152,18 +172,18 @@ void CreateOBJ()
         std::cout<<"Failed to load model8"<<std::endl;
     }
 
-    Mesh *obj9 = new Mesh();
-    bool loaded9 = obj9->CreateMeshFromOBJ("Models/cube.obj");
-    if (loaded9)
+    Mesh *obj13 = new Mesh();
+    bool loaded13 = obj13->CreateMeshFromOBJ("Models/cube.obj");
+    if (loaded13)
     {
         for (int i = 0; i < 1; i++)
         {
-            meshList.push_back(obj9);
+            meshList.push_back(obj13);
         }
     }
     else
     {
-        std::cout<<"Failed to load model9"<<std::endl;
+        std::cout<<"Failed to load model13"<<std::endl;
     }
 }
 
@@ -207,12 +227,71 @@ void checkMouse()
     pitch = glm::clamp(pitch, -89.0f, 89.0f);
 }
 
+unsigned int LoadTextureJPG(const std::string& filename)
+{
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
+
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cerr << "Failed to load texture: " << filename << std::endl;
+    }
+
+    stbi_image_free(data);
+    return textureID;
+}
+
+unsigned int LoadTexturePNG(const std::string& filename)
+{
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
+
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cerr << "Failed to load texture: " << filename << std::endl;
+    }
+
+    stbi_image_free(data);
+    return textureID;
+}
+
 int main()
 {
     mainWindow = Window(WIDTH, HEIGHT, 3, 3);
     mainWindow.initialise();
 
     CreateOBJ();
+    // CreateModels();
     CreateShaders();
 
     GLuint uniformModel = 0;
@@ -231,76 +310,16 @@ int main()
     //glm::mat4 projection = glm::ortho(-4.0f, 4.0f, -3.0f, 3.0f, 0.1f, 100.0f);
 
     //texture
-    unsigned int texture1;
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1);
+    unsigned int texture1 = LoadTextureJPG("Textures/brownwood.jpg");
+    unsigned int texture2 = LoadTextureJPG("Textures/chairPadTextures.jpg");
+    unsigned int texture3 = LoadTextureJPG("Textures/brownwood.jpg");
+    unsigned int texture4 = LoadTextureJPG("Textures/tablePadTextures.jpg");
+    unsigned int texture5 = LoadTextureJPG("Textures/steelTextures.jpg");
+    unsigned int texture6 = LoadTextureJPG("Textures/floorTextures.jpg");
+    unsigned int texture7 = LoadTextureJPG("Textures/blackwood.jpg");
+    unsigned int texture8 = LoadTextureJPG("Textures/glassTextures.jpg");
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    int width, height, nrChannels;
-    unsigned char *data = stbi_load("Textures/blackwood.jpg", &width, &height, &nrChannels, 0);
-
-    if (data)
-    {
-        //bind image with texture
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout<<"Failed to load texture"<<std::endl;
-    }
-
-    // unsigned int texture2;
-    // glGenTextures(1, &texture2);
-    // glBindTexture(GL_TEXTURE_2D, texture2);
-
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // unsigned char *data2 = stbi_load("Textures/darkwood.jpg", &width, &height, &nrChannels, 0);
-
-    // if (data2)
-    // {
-    //     //bind image with texture
-    //     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data2);
-    //     glGenerateMipmap(GL_TEXTURE_2D);
-    // }
-    // else
-    // {
-    //     std::cout<<"Failed to load texture"<<std::endl;
-    // }
-
-    // stbi_image_free(data2);
-
-    // unsigned int texture3;
-    // glGenTextures(1, &texture3);
-    // glBindTexture(GL_TEXTURE_2D, texture3);
-
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // unsigned char *data3 = stbi_load("Textures/blackwood.jpg", &width, &height, &nrChannels, 0);
-
-    // if (data3)
-    // {
-    //     //bind image with texture
-    //     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data3);
-    //     glGenerateMipmap(GL_TEXTURE_2D);
-    // }
-    // else
-    // {
-    //     std::cout<<"Failed to load texture"<<std::endl;
-    // }
-
-    // stbi_image_free(data3);
+    unsigned int textures[] = { texture1, texture2, texture3, texture4, texture5, texture6, texture7, texture8 };   //texture1, texture2, texture3, texture4, texture5, texture6, texture7, texture8
 
     //for secret room 3 enter - https://forms.gle/U9VE4pkYAPNvUW1H9
 
@@ -379,7 +398,7 @@ int main()
             glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(view));
 
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, texture1);
+            glBindTexture(GL_TEXTURE_2D, textures[i]); 
             
             meshList[i]->RenderMesh();
         }
@@ -391,6 +410,7 @@ int main()
 
         glm::mat4 model (1.0f);
         model = glm::translate(model, lightPos);
+        model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
         glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(view));
@@ -401,7 +421,6 @@ int main()
         //end draw
 
         glUseProgram(0);
-        
 
         //magic word - SAKURA
 
